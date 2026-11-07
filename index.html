@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#17100B">
+  <title>Fuego Sultanahmet — Menü</title>
+  <meta name="description" content="Fuego Sultanahmet güncel menü ve fiyatlar: kahvaltı, mezeler, kebaplar, Osmanlı spesiyalleri, pizza ve tatlılar. Sultanahmet, İstanbul.">
+  <link rel="canonical" href="https://menu.fuegosultanahmet.com/">
+  <meta property="og:title" content="Fuego Sultanahmet — Menü">
+  <meta property="og:description" content="Güncel menü ve fiyatlar · Current menu and prices">
+  <meta property="og:url" content="https://menu.fuegosultanahmet.com/">
+  <meta property="og:type" content="website">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="images/brand/icon-512.png">
+  <link rel="apple-touch-icon" href="images/brand/icon-512.png">
+  <meta property="og:image" content="https://menu.fuegosultanahmet.com/images/brand/icon-512.png">
+  <link rel="stylesheet" href="css/style.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Restaurant",
+    "name": "Fuego Sultanahmet",
+    "url": "https://fuegosultanahmet.com",
+    "hasMenu": "https://menu.fuegosultanahmet.com/",
+    "servesCuisine": ["Turkish", "Ottoman", "Mediterranean"],
+    "address": { "@type": "PostalAddress", "addressLocality": "Fatih, İstanbul", "addressCountry": "TR" }
+  }
+  </script>
+</head>
+<body>
+
+  <header class="site-header" id="siteHeader">
+    <div class="header-inner">
+      <div class="header-logo-wrap">
+        <img id="headerLogo" class="header-logo-img" alt="" src="images/brand/flame-red.png">
+        <div>
+          <div class="header-brand-name" id="headerName">FUEGO</div>
+          <span class="header-brand-sub" id="headerSub">SULTANAHMET</span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <div class="lang-picker">
+          <button type="button" class="lang-btn" id="langBtn" aria-haspopup="true" aria-expanded="false" aria-label="Dil / Language / Язык / Idioma"></button>
+          <div class="lang-menu" id="langMenu" hidden></div>
+        </div>
+        <button class="search-btn-hdr" id="searchBtn" aria-label="Menüde ara">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div class="search-bar" id="searchBar">
+      <input type="search" id="searchInput" placeholder="Menüde ara..." autocomplete="off" aria-label="Menüde ara">
+    </div>
+  </header>
+
+  <div class="hero">
+    <img class="hero-logo" src="images/brand/logo-dark.png" width="390" height="386" alt="Fuego Restaurant & Café">
+    <h1 class="hero-title" id="heroTitle">Menü</h1>
+    <p class="hero-tagline" id="heroTagline">Osmanlı'nın Ruhu, Modern Yorumu</p>
+  </div>
+
+  <nav class="category-nav" id="categoryNav" aria-label="Kategoriler">
+    <div class="cat-nav-inner" id="catNavInner"></div>
+  </nav>
+
+  <main id="menuContent"></main>
+
+  <figure class="lightbox" id="lightbox" role="dialog" aria-modal="true">
+    <div><img id="lightboxImg" alt=""><figcaption id="lightboxCap"></figcaption></div>
+  </figure>
+
+  <footer class="site-footer">
+    <p id="footerNote">Fiyatlarımıza tüm vergiler dahildir. Servis ücreti alınmaz.</p>
+    <p>Fuego Sultanahmet<br><a href="https://fuegosultanahmet.com" target="_blank" rel="noopener">fuegosultanahmet.com</a></p>
+  </footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/translations.js"></script>
+  <script src="js/menu.js"></script>
+</body>
+</html>

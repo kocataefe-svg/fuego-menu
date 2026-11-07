@@ -1,0 +1,195 @@
+/* ── Fuego QR Menu — Customer Styles (dark / brass / iznik) ─────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:        #17100B;  /* turkish coffee */
+  --surface:   #21170F;
+  --line:      rgba(200, 161, 90, 0.22);
+  --brass:     #C8A15A;
+  --brass-hi:  #E2C285;
+  --iznik:     #3F8A86;
+  --flame:     #A8322A;  /* logo red */
+  --text:      #F1E6D3;
+  --muted:     #A8957F;
+  --header-h:  60px;
+  --max:       720px;
+}
+
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { transition: none !important; animation: none !important; } }
+
+body {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+:focus-visible { outline: 2px solid var(--brass-hi); outline-offset: 2px; border-radius: 4px; }
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
+.site-header {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(23, 16, 11, 0.92);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+.header-inner {
+  display: flex; align-items: center; justify-content: space-between;
+  height: var(--header-h); padding: 0 16px;
+  max-width: var(--max); margin: 0 auto;
+}
+.header-logo-wrap { display: flex; align-items: center; gap: 10px; }
+.header-logo-img { height: 34px; width: auto; }.header-brand-name {
+  font-family: 'Marcellus', Georgia, serif;
+  font-size: 1.3rem; letter-spacing: 0.14em; color: var(--brass-hi); line-height: 1;
+}
+.header-brand-sub { display: block; font-size: 0.66rem; letter-spacing: 0.24em; color: var(--muted); margin-top: 3px; }
+.header-actions { display: flex; gap: 8px; }
+
+.lang-btn, .search-btn-hdr {
+  min-width: 40px; height: 36px; padding: 0 10px;
+  background: transparent; color: var(--text);
+  border: 1px solid var(--line); border-radius: 18px;
+  font: 600 0.8rem/1 'Figtree', sans-serif; letter-spacing: 0.06em;
+  cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
+  transition: border-color .15s, color .15s;
+}
+.lang-btn:hover, .search-btn-hdr:hover { border-color: var(--brass); color: var(--brass-hi); }
+.flag { width: 22px; height: 15px; border-radius: 2px; flex-shrink: 0; box-shadow: 0 0 0 1px rgba(255,255,255,.15); }
+.lang-picker { position: relative; }
+.lang-btn { gap: 7px; }
+.lang-menu {
+  position: absolute; right: 0; top: calc(100% + 6px); z-index: 120; min-width: 160px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+  padding: 6px; box-shadow: 0 10px 30px rgba(0,0,0,.45);
+}
+.lang-menu[hidden] { display: none; }
+.lang-option {
+  display: flex; align-items: center; gap: 10px; width: 100%;
+  padding: 10px 10px; border: none; border-radius: 8px; background: none; cursor: pointer;
+  color: var(--text); font: 500 0.92rem/1 'Figtree', sans-serif; text-align: left;
+}
+.lang-option:hover { background: rgba(200,161,90,.12); }
+.lang-option[aria-current="true"] { color: var(--brass-hi); background: rgba(200,161,90,.08); }
+
+.search-bar { max-height: 0; overflow: hidden; transition: max-height .2s ease; }
+.search-bar.visible { max-height: 64px; border-top: 1px solid var(--line); }
+.search-bar input {
+  display: block; width: 100%; max-width: var(--max); margin: 0 auto;
+  padding: 14px 16px; border: none; outline: none;
+  background: transparent; color: var(--text); font: inherit;
+}
+.search-bar input::placeholder { color: var(--muted); }
+
+/* ── Hero ────────────────────────────────────────────────────────────────── */
+.hero {
+  text-align: center; padding: 40px 16px 32px;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(200,161,90,0.12), transparent 65%),
+    var(--bg);
+}
+.hero-logo { display: block; width: min(190px, 52vw); height: auto; margin: 0 auto 22px; animation: logo-in 1s ease-out both; }
+@keyframes logo-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.hero-title {
+  font-family: 'Marcellus', Georgia, serif; font-weight: 400;
+  font-size: 1.7rem; letter-spacing: 0.08em; color: var(--brass-hi); line-height: 1.1;
+}
+.hero-tagline { margin-top: 10px; color: var(--muted); font-size: 0.98rem; }
+.hero-meta { margin-top: 14px; font-size: 0.8rem; color: var(--muted); }
+.hero-meta a { color: var(--brass-hi); text-decoration: none; }
+
+/* ── Category Nav ────────────────────────────────────────────────────────── */
+.category-nav {
+  position: sticky; top: var(--header-h); z-index: 90;
+  background: rgba(23, 16, 11, 0.96);
+  border-bottom: 1px solid var(--line);
+}
+.cat-nav-inner {
+  display: flex; gap: 22px; padding: 0 16px;
+  overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch;
+  max-width: var(--max); margin: 0 auto;
+}
+.cat-nav-inner::-webkit-scrollbar { display: none; }
+.cat-tab {
+  flex-shrink: 0; background: none; border: none; cursor: pointer;
+  padding: 14px 0 12px; border-bottom: 2px solid transparent;
+  color: var(--muted); font: 500 0.9rem/1 'Figtree', sans-serif; white-space: nowrap;
+  transition: color .15s, border-color .15s;
+}
+.cat-tab:hover { color: var(--text); }
+.cat-tab.active { color: var(--brass-hi); border-bottom-color: var(--brass); }
+
+/* ── Sections ────────────────────────────────────────────────────────────── */
+#menuContent { max-width: var(--max); margin: 0 auto; padding-bottom: 40px; }
+.menu-section { padding: 36px 16px 4px; scroll-margin-top: 120px; }
+.section-header { display: flex; align-items: center; gap: 14px; margin-bottom: 8px; }
+.section-title {
+  font-family: 'Marcellus', Georgia, serif; font-weight: 400;
+  font-size: 1.6rem; color: var(--brass-hi); letter-spacing: 0.03em; line-height: 1.2;
+}
+.section-divider { flex: 1; height: 1px; background: var(--line); }
+
+/* ── Items (printed-menu list, not cards) ───────────────────────────────── */
+.items-list { display: flex; flex-direction: column; }
+.item-card {
+  display: flex; gap: 14px; align-items: flex-start;
+  padding: 16px 0; border-bottom: 1px solid rgba(241, 230, 211, 0.07);
+}
+.item-card:last-child { border-bottom: none; }
+.item-info { flex: 1; min-width: 0; }
+
+.item-top { display: flex; align-items: baseline; gap: 8px; }
+.item-name {
+  font-family: 'Figtree', sans-serif; font-weight: 600; font-size: 1.02rem;
+  color: var(--text); line-height: 1.3;
+}
+.item-leader { flex: 1; min-width: 16px; border-bottom: 1px dotted rgba(200,161,90,0.4); transform: translateY(-4px); }
+.item-price {
+  flex-shrink: 0; font-family: 'Marcellus', Georgia, serif;
+  font-size: 1.08rem; color: var(--brass-hi); white-space: nowrap;
+}
+.item-desc { margin-top: 5px; font-size: 0.86rem; color: var(--muted); line-height: 1.55; max-width: 60ch; }
+.item-meta { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.item-meta:empty { display: none; }
+
+.badge, .tag {
+  font-size: 0.72rem; font-weight: 600; line-height: 1;
+  padding: 4px 8px; border-radius: 10px;
+}
+.badge-popular { color: #FBEDE6; background: var(--flame); }
+.badge-new     { color: var(--brass-hi); border: 1px solid var(--brass); }
+.tag           { color: #9FD3CE; border: 1px solid rgba(63,138,134,0.55); }
+
+.item-img-wrap {
+  flex-shrink: 0; width: 84px; height: 84px; border-radius: 10px; overflow: hidden;
+  background: var(--surface); border: 1px solid var(--line); cursor: zoom-in;
+}
+.item-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+.empty-state { padding: 48px 16px; text-align: center; color: var(--muted); }
+
+/* ── Photo viewer (opens on tap) ─────────────────────────────────────────── */
+.lightbox {
+  position: fixed; inset: 0; z-index: 200; display: none;
+  align-items: center; justify-content: center; padding: 16px;
+  background: rgba(10, 6, 4, 0.92);
+}
+.lightbox.open { display: flex; }
+.lightbox img { max-width: 100%; max-height: 80vh; border-radius: 12px; }
+.lightbox figcaption { margin-top: 12px; text-align: center; color: var(--text); font-family: 'Marcellus', serif; font-size: 1.1rem; }
+
+/* ── Footer ──────────────────────────────────────────────────────────────── */
+.site-footer {
+  text-align: center; padding: 28px 16px 40px;
+  color: var(--muted); font-size: 0.8rem; line-height: 1.7;
+  border-top: 1px solid var(--line);
+}
+.site-footer a { color: var(--brass-hi); text-decoration: none; }
+
+@media (min-width: 640px) {
+  .item-img-wrap { width: 96px; height: 96px; }
+  .section-title { font-size: 1.9rem; }
+}
