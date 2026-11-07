@@ -702,3 +702,12 @@ input[type="file"] { display: none; }
 .publish-btn:disabled { opacity: .6; cursor: wait; }
 .publish-status { font-size: 0.75rem; color: rgba(255,255,255,.6); text-align: center; margin: 0; }
 .publish-status.pending { color: #F0B35A; font-weight: 600; }
+
+/* Item photo: drag-and-drop or click to pick */
+.img-drop {
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px; border: 2px dashed #EAD8C4; border-radius: 10px;
+  cursor: pointer; color: var(--text-mid); font-size: 0.9rem;
+}
+.img-drop:hover, .img-drop.over { border-color: var(--primary); background: #FFF6EE; }
+.img-drop #imgPreview { width: 80px; height: 80px; object-fit: cover; border-radius: 8px; }

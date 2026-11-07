@@ -131,18 +131,14 @@ function openItemModal(id) {
     document.getElementById('tagSpicy').checked = (editingItem.tags || []).includes('spicy');
     document.getElementById('badgePopular').checked = (editingItem.badges || []).includes('popular');
     document.getElementById('badgeNew').checked = (editingItem.badges || []).includes('new');
-    document.getElementById('itemImgPath').value = editingItem.image || '';
-    const prev = document.getElementById('imgPreview');
-    if (editingItem.image) { prev.src = editingItem.image; prev.style.display = 'block'; }
-    else { prev.style.display = 'none'; }
+    setItemImage(editingItem.image || '');
   } else {
     document.getElementById('itemNameTR').value = '';
     document.getElementById('itemNameEN').value = '';
     document.getElementById('itemDescTR').value = '';
     document.getElementById('itemDescEN').value = '';
     document.getElementById('itemPrice').value = '';
-    document.getElementById('itemImgPath').value = '';
-    document.getElementById('imgPreview').style.display = 'none';
+    setItemImage('');
     catSel.value = adminData.categories[0]?.id || '';
     document.getElementById('itemVisible').checked = true;
     ['tagVegetarian','tagVegan','tagSpicy','badgePopular','badgeNew'].forEach(id => {
@@ -158,11 +154,78 @@ function closeItemModal() {
   editingItem = null;
 }
 
-document.getElementById('itemImgPath').addEventListener('input', function() {
-  const path = this.value.trim();
+// ── Item photo: drag-and-drop or file picker → compressed → /api/upload (Vercel Blob)
+function setItemImage(url) {
+  document.getElementById('itemImgPath').value = url;
   const prev = document.getElementById('imgPreview');
-  if (path) { prev.src = path; prev.style.display = 'block'; prev.onerror = () => prev.style.display = 'none'; }
-  else { prev.style.display = 'none'; }
+  prev.style.display = url ? 'block' : 'none';
+  if (url) prev.src = url;
+  document.getElementById('imgRemoveBtn').style.display = url ? 'inline-block' : 'none';
+  document.getElementById('imgDropText').innerHTML = url
+    ? 'Değiştirmek için yeni fotoğraf sürükleyin veya <u>dosyadan seçin</u>'
+    : 'Fotoğrafı buraya sürükleyin veya <u>dosyadan seçin</u>';
+}
+
+async function uploadItemImage(file) {
+  if (!file || !file.type.startsWith('image/')) { alert('Lütfen bir fotoğraf dosyası seçin.'); return; }
+  const text = document.getElementById('imgDropText');
+  const saveBtn = document.querySelector('#itemForm button[type="submit"]');
+  text.textContent = 'Yükleniyor…';
+  saveBtn.disabled = true;
+  try {
+    const image = await compressImage(await readAsDataURL(file), 1200, 0.82);
+    const res = await fetch('/api/upload', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: sessionStorage.getItem(PW_KEY), image })
+    });
+    const out = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(out.error || `Sunucu hatası (${res.status})`);
+    setItemImage(out.url);
+  } catch (err) {
+    alert(`Fotoğraf yüklenemedi: ${err.message}`);
+    setItemImage(document.getElementById('itemImgPath').value);
+  } finally {
+    saveBtn.disabled = false;
+  }
+}
+
+function readAsDataURL(file) {
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(r.result);
+    r.onerror = () => reject(new Error('Dosya okunamadı.'));
+    r.readAsDataURL(file);
+  });
+}
+
+// Scales the longest side down to maxSize and re-encodes (JPEG for photos, PNG keeps logo transparency).
+function compressImage(dataUrl, maxSize, quality, type = 'image/jpeg') {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      const scale = Math.min(1, maxSize / Math.max(img.width, img.height));
+      const c = document.createElement('canvas');
+      c.width = Math.round(img.width * scale);
+      c.height = Math.round(img.height * scale);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      resolve(c.toDataURL(type, quality));
+    };
+    img.onerror = () => reject(new Error('Fotoğraf açılamadı.'));
+    img.src = dataUrl;
+  });
+}
+
+const imgDrop = document.getElementById('imgDrop');
+document.getElementById('itemImgFile').addEventListener('change', function () {
+  uploadItemImage(this.files[0]);
+  this.value = '';
+});
+imgDrop.addEventListener('dragover', e => { e.preventDefault(); imgDrop.classList.add('over'); });
+imgDrop.addEventListener('dragleave', () => imgDrop.classList.remove('over'));
+imgDrop.addEventListener('drop', e => {
+  e.preventDefault();
+  imgDrop.classList.remove('over');
+  uploadItemImage(e.dataTransfer.files[0]);
 });
 
 document.getElementById('itemForm').addEventListener('submit', e => {
@@ -343,7 +406,7 @@ document.getElementById('logoInput').addEventListener('change', async function()
   if (!file) return;
   const reader = new FileReader();
   reader.onload = async ev => {
-    const compressed = await compressImage(ev.target.result, 400, 0.9);
+    const compressed = await compressImage(ev.target.result, 400, 0.9, 'image/png');
     const lp = document.getElementById('logoPreview');
     lp.src = compressed;
     lp.style.display = 'block';

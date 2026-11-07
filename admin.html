@@ -243,12 +243,14 @@
             </div>
           </div>
           <div class="form-row">
-            <label class="form-label">Görsel Yolu</label>
-            <input type="text" id="itemImgPath" class="form-input" placeholder="images/07 Kebabs - Kebaplar/Adana Kebab.jpg">
-            <div class="img-preview-wrap" style="margin-top:8px">
-              <img id="imgPreview" style="display:none;width:80px;height:80px;object-fit:cover;border-radius:8px;border:1px solid #EAD8C4" alt="Önizleme">
-            </div>
-            <p class="form-hint">Fotoğrafı <strong>images/</strong> klasörünün içine kopyalayın, sonra yolunu buraya yazın.</p>
+            <label class="form-label">Fotoğraf</label>
+            <label class="img-drop" id="imgDrop">
+              <input type="file" id="itemImgFile" accept="image/*" hidden>
+              <img id="imgPreview" style="display:none" alt="Önizleme">
+              <span id="imgDropText">Fotoğrafı buraya sürükleyin veya <u>dosyadan seçin</u></span>
+            </label>
+            <input type="hidden" id="itemImgPath">
+            <button type="button" class="btn-secondary" id="imgRemoveBtn" style="display:none;margin-top:8px" onclick="setItemImage('')">Fotoğrafı kaldır</button>
           </div>
           <div class="form-row">
             <label class="form-check">
