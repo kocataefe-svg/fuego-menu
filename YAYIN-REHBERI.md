@@ -29,13 +29,8 @@ Adres: **https://menu.fuegosultanahmet.com/admin.html** (telefondan da açılır
 Kaydet sadece taslağı kaydeder. Müşteriler değişikliği **Menüyü Yayınla**'ya bastıktan ~1 dakika sonra görür.
 Sol altta "Yayınlanmamış değişiklikler var" yazıyorsa henüz yayınlamadınız demektir. Fiyatı 0 olan ürünlerde fiyat görünmez.
 
-### Yayınla düğmesini bağlama (bir kez yapılır)
-1. GitHub'da: **Settings → Developer settings → Personal access tokens → Fine-grained tokens → Generate new token**
-2. *Repository access*: yalnızca `fuego-menu` deposu. *Permissions → Contents*: **Read and write**. Oluşturun ve kopyalayın.
-3. Admin paneli → **Ayarlar → Yayın bağlantısı** → anahtarı yapıştırıp **Bağlantıyı Kaydet**.
-
-Anahtar yalnızca o tarayıcıda saklanır; başka biri admin sayfasını açsa bile anahtar olmadan yayınlayamaz.
-Anahtar girilmemişse düğme `data.js` dosyasını indirir; bu dosya GitHub'da `js/data.js` yerine yüklenir.
+Ek bir ayar gerekmez. Şifre sunucuda kontrol edilir (Vercel ortam değişkeni `ADMIN_PASS_HASH`, şifrenin SHA-256 özeti) ve sitenin kodunda yer almaz.
+Yayınlanan menü Vercel Blob'da `menu.json` olarak saklanır. Şifreyi değiştirmek için `ADMIN_PASS_HASH` değeri yenisiyle güncellenir.
 
 Menü 4 dilde: TR, EN (admin panelinden), RU, ES (`js/translations.js`). Admin'den eklenen yeni ürünün Rusça/İspanyolca adı yoksa o dillerde İngilizcesi görünür.
 
