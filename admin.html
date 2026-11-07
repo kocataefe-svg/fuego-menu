@@ -170,51 +170,18 @@
         <div id="sec_settings" class="admin-section" style="display:none">
           <h1 class="page-title">Ayarlar</h1>
           <div class="card">
-            <div class="card-title">Yayın bağlantısı (GitHub)</div>
-            <p style="font-size:0.85rem; color:var(--text-mid); margin-bottom:16px;">
-              "Menüyü Yayınla" düğmesi değişiklikleri bu depoya kaydeder; site 1 dakika içinde güncellenir.
-              Anahtar yalnızca bu tarayıcıda saklanır. Boş bırakırsanız düğme <b>data.js</b> dosyasını indirir.
+            <div class="card-title">Yayınlama ve şifre</div>
+            <p style="font-size:0.85rem; color:var(--text-mid);">
+              Değişiklikleri müşterilere göndermek için sol alttaki <b>Menüyü Yayınla</b> düğmesine basmanız yeterli; başka bir ayar gerekmez.
+              Admin şifresi sunucuda saklanır, sitenin kodunda yer almaz.
             </p>
-            <form id="githubForm">
-              <div class="form-row">
-                <label class="form-label">Depo (kullanıcı/depo)</label>
-                <input type="text" id="ghRepo" class="form-input" placeholder="kocataefe-svg/fuego-menu">
-              </div>
-              <div class="form-row">
-                <label class="form-label">GitHub erişim anahtarı (token)</label>
-                <input type="password" id="ghToken" class="form-input" placeholder="github_pat_..." autocomplete="off">
-              </div>
-              <div class="form-actions">
-                <button type="submit" class="btn-primary">Bağlantıyı Kaydet</button>
-              </div>
-            </form>
-          </div>
-          <div class="card">
-            <div class="card-title">Şifre Değiştir</div>
-            <form id="changePassForm">
-              <div class="form-row">
-                <label class="form-label">Mevcut Şifre</label>
-                <input type="password" id="currPass" class="form-input" required>
-              </div>
-              <div class="form-row">
-                <label class="form-label">Yeni Şifre</label>
-                <input type="password" id="newPass1" class="form-input" required>
-              </div>
-              <div class="form-row">
-                <label class="form-label">Yeni Şifre (Tekrar)</label>
-                <input type="password" id="newPass2" class="form-input" required>
-              </div>
-              <div class="form-actions">
-                <button type="submit" class="btn-primary">Şifreyi Güncelle</button>
-              </div>
-            </form>
           </div>
           <div class="card" style="border-color:#D63B2F22">
             <div class="card-title" style="color:#D63B2F">Tehlikeli Bölge</div>
             <p style="font-size:0.85rem; color:var(--text-mid); margin-bottom:16px;">
-              Tüm menü verilerini varsayılana sıfırlar. Bu işlem geri alınamaz.
+              Yayınlanmamış değişiklikleri siler, menüyü yayındaki haline döndürür.
             </p>
-            <button class="btn-danger" onclick="resetAllData()">⚠ Tüm Verileri Sıfırla</button>
+            <button class="btn-danger" onclick="resetAllData()">⚠ Değişiklikleri Geri Al</button>
           </div>
         </div>
 

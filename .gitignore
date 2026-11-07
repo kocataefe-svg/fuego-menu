@@ -5,3 +5,4 @@ images/[0-9].JPG
 images/1[0-9].JPG
 .claude/
 qr/
+node_modules/

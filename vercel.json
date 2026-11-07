@@ -1,0 +1,5 @@
+{
+  "rewrites": [
+    { "source": "/menu.json", "destination": "https://mtrtur9ki8b6srhn.public.blob.vercel-storage.com/menu.json" }
+  ]
+}

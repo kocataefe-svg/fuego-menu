@@ -6,27 +6,38 @@ let editingCat = null;
 let currentSection = 'items';
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
+// The password is checked by the server (/api/login); it is kept for this tab only so publish can send it.
+const PW_KEY = 'fuego_admin_pw';
+let publishedData = null;
+
 function checkAuth() {
-  const session = sessionStorage.getItem('fuego_admin_ok');
-  if (session === '1') { showAdmin(); return; }
+  if (sessionStorage.getItem(PW_KEY)) { showAdmin(); return; }
   document.getElementById('loginScreen').style.display = 'flex';
   document.getElementById('adminApp').style.display = 'none';
 }
 
-document.getElementById('loginForm').addEventListener('submit', e => {
+document.getElementById('loginForm').addEventListener('submit', async e => {
   e.preventDefault();
   const pass = document.getElementById('passInput').value;
-  if (pass === getAdminPass()) {
-    sessionStorage.setItem('fuego_admin_ok', '1');
-    document.getElementById('loginScreen').style.display = 'none';
+  const err = document.getElementById('loginError');
+  err.textContent = '';
+  try {
+    const res = await fetch('/api/login', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: pass })
+    });
+    if (!res.ok) { err.textContent = res.status === 401 ? 'Şifre hatalı.' : 'Giriş yapılamadı, tekrar deneyin.'; return; }
+    sessionStorage.setItem(PW_KEY, pass);
     showAdmin();
-  } else {
-    document.getElementById('loginError').textContent = 'Şifre hatalı.';
+  } catch {
+    err.textContent = 'Sunucuya ulaşılamadı. İnternet bağlantınızı kontrol edin.';
   }
 });
 
-function showAdmin() {
-  adminData = getData();
+async function showAdmin() {
+  publishedData = await loadPublished();
+  publishedJSON = JSON.stringify(publishedData && publishedData.version > DEFAULT_DATA.version ? publishedData : DEFAULT_DATA);
+  adminData = getData(publishedData);
   document.getElementById('loginScreen').style.display = 'none';
   document.getElementById('adminApp').style.display = 'flex';
   showSection('items');
@@ -44,7 +55,6 @@ function showSection(sec) {
   if (sec === 'items')      renderItemsList();
   if (sec === 'categories') renderCatList();
   if (sec === 'restaurant') renderRestaurantForm();
-  if (sec === 'settings')   renderSettingsForm();
   if (sec === 'qr')         renderQR();
 }
 
@@ -362,29 +372,11 @@ document.getElementById('restaurantForm').addEventListener('submit', e => {
 });
 
 // ── Settings ──────────────────────────────────────────────────────────────────
-function renderSettingsForm() {
-  const { repo, token } = ghConfig();
-  document.getElementById('ghRepo').value = repo || 'kocataefe-svg/fuego-menu';
-  document.getElementById('ghToken').value = token || '';
-}
-
-document.getElementById('changePassForm').addEventListener('submit', e => {
-  e.preventDefault();
-  const curr = document.getElementById('currPass').value;
-  const np1  = document.getElementById('newPass1').value;
-  const np2  = document.getElementById('newPass2').value;
-  if (curr !== getAdminPass()) { alert('Mevcut şifre hatalı.'); return; }
-  if (np1 !== np2)             { alert('Yeni şifreler eşleşmiyor.'); return; }
-  if (np1.length < 4)          { alert('Şifre en az 4 karakter olmalı.'); return; }
-  setAdminPass(np1);
-  document.getElementById('changePassForm').reset();
-  showToast('Şifre güncellendi ✓');
-});
-
 function resetAllData() {
-  if (!confirm('TÜM menü verilerini sıfırlamak istediğinize emin misiniz? Bu işlem geri alınamaz.')) return;
-  localStorage.removeItem('fuego_menu_v1');
-  adminData = getData();
+  if (!confirm('Yayınlanmamış tüm değişiklikler silinsin ve menü yayındaki haline dönsün mü?')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  adminData = getData(publishedData);
+  updatePublishStatus();
   showSection('items');
   showToast('Veriler sıfırlandı');
 }
@@ -405,45 +397,8 @@ function copyMenuUrl() {
 }
 
 // ── Publish ───────────────────────────────────────────────────────────────────
-// Customers read js/data.js from the live site, so "publishing" = writing a new data.js.
-// With a GitHub token it is committed to the repo (Vercel redeploys in ~1 min);
-// without one the file is downloaded so it can be uploaded by hand.
-const GH_KEY = 'fuego_github';
-const DATA_PATH = 'js/data.js';
-
-function ghConfig() {
-  try { return JSON.parse(localStorage.getItem(GH_KEY)) || {}; } catch { return {}; }
-}
-
-document.getElementById('githubForm').addEventListener('submit', e => {
-  e.preventDefault();
-  localStorage.setItem(GH_KEY, JSON.stringify({
-    repo: document.getElementById('ghRepo').value.trim(),
-    token: document.getElementById('ghToken').value.trim()
-  }));
-  showToast('Bağlantı kaydedildi ✓');
-  updatePublishStatus();
-});
-
-function b64EncodeUtf8(str) {
-  const bytes = new TextEncoder().encode(str);
-  let bin = '';
-  bytes.forEach(b => { bin += String.fromCharCode(b); });
-  return btoa(bin);
-}
-function b64DecodeUtf8(b64) {
-  const bin = atob(b64.replace(/\n/g, ''));
-  return new TextDecoder().decode(Uint8Array.from(bin, c => c.charCodeAt(0)));
-}
-
-// Replace only the DEFAULT_DATA block; keep the helper functions of the file as they are.
-function buildDataFile(template, data) {
-  const start = template.indexOf('const DEFAULT_DATA = ');
-  const end = template.indexOf('\nfunction getData');
-  if (start < 0 || end < 0) throw new Error('data.js beklenen biçimde değil');
-  return template.slice(0, start) + 'const DEFAULT_DATA = ' + JSON.stringify(data, null, 2) + ';\n' + template.slice(end);
-}
-
+// /api/publish checks the password and stores the menu as menu.json (Vercel Blob);
+// customers load it on every visit, so changes show up within about a minute.
 let publishedJSON = JSON.stringify(DEFAULT_DATA);
 function isUnpublished() {
   return JSON.stringify(adminData) !== publishedJSON;
@@ -464,34 +419,18 @@ async function publishMenu() {
   btn.disabled = true;
   const next = { ...adminData, version: Date.now() };
   try {
-    const { repo, token } = ghConfig();
-    if (repo && token) {
-      const api = `https://api.github.com/repos/${repo}/contents/${DATA_PATH}`;
-      const headers = { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' };
-      const cur = await fetch(api, { headers, cache: 'no-store' });
-      if (!cur.ok) throw new Error(`GitHub dosyayı okuyamadı (${cur.status}). Depo adını ve anahtarı kontrol edin.`);
-      const file = await cur.json();
-      const content = buildDataFile(b64DecodeUtf8(file.content), next);
-      const put = await fetch(api, {
-        method: 'PUT', headers,
-        body: JSON.stringify({ message: 'Menü güncellendi (admin paneli)', content: b64EncodeUtf8(content), sha: file.sha })
-      });
-      if (!put.ok) throw new Error(`GitHub kaydı reddetti (${put.status}). Anahtarın "Contents: write" izni olmalı.`);
-      showToast('Yayınlandı ✓ Site 1 dakika içinde güncellenir');
-    } else {
-      const res = await fetch(DATA_PATH, { cache: 'no-store' });
-      if (!res.ok) throw new Error('data.js okunamadı. Paneli bir sunucu üzerinden açın.');
-      const content = buildDataFile(await res.text(), next);
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(new Blob([content], { type: 'text/javascript' }));
-      a.download = 'data.js';
-      a.click();
-      showToast('data.js indirildi. Bu dosyayı sitedeki js/data.js ile değiştirin.');
-    }
+    const res = await fetch('/api/publish', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: sessionStorage.getItem(PW_KEY), data: next })
+    });
+    const out = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(out.error || `Sunucu hatası (${res.status})`);
     adminData = next;
+    publishedData = next;
     publishedJSON = JSON.stringify(next);
     saveData(adminData);
     updatePublishStatus();
+    showToast('Yayınlandı ✓ Müşteriler 1 dakika içinde görür');
   } catch (err) {
     alert(`Yayınlanamadı: ${err.message}`);
   } finally {

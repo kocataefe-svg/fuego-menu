@@ -64,8 +64,8 @@ function formatPrice(price, currency) {
   return `${currency || '₺'}${Number(price).toLocaleString('tr-TR')}`;
 }
 
-function initMenu() {
-  menuData = getData();
+async function initMenu() {
+  menuData = getData(await loadPublished());
   applyTranslations(menuData);
   const d = menuData;
   const r = d.restaurant;

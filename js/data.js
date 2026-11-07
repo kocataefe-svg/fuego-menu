@@ -1,8 +1,6 @@
 'use strict';
 
 const STORAGE_KEY = 'fuego_menu_v1';
-const ADMIN_PASS_KEY = 'fuego_admin_pass';
-const DEFAULT_PASS = 'fuego2026';
 
 const DEFAULT_DATA = {
   version: 2, // bump on every manual edit so stale admin drafts are discarded
@@ -289,17 +287,26 @@ const DEFAULT_DATA = {
   ]
 };
 
-function getData() {
+// The menu published from the admin panel (/menu.json → Vercel Blob); null if none yet.
+async function loadPublished() {
   try {
-    // A local copy (admin draft) wins only if it is not older than the published file;
-    // otherwise the published menu (this file) is the source of truth.
+    const res = await fetch('/menu.json', { cache: 'no-store' });
+    if (res.ok) return await res.json();
+  } catch {}
+  return null;
+}
+
+// Newest of: published menu, this file, and a local admin draft (draft wins only if not older).
+function getData(published) {
+  const base = published && (published.version || 0) > (DEFAULT_DATA.version || 0) ? published : DEFAULT_DATA;
+  try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       const d = JSON.parse(raw);
-      if ((d.version || 0) >= (DEFAULT_DATA.version || 0)) return d;
+      if ((d.version || 0) >= (base.version || 0)) return d;
     }
   } catch {}
-  return JSON.parse(JSON.stringify(DEFAULT_DATA));
+  return JSON.parse(JSON.stringify(base));
 }
 
 function saveData(data) {
@@ -310,14 +317,6 @@ function saveData(data) {
     alert('Kayıt başarısız. Yerel depolama dolmuş olabilir (fotoğraflar çok büyük).');
     return false;
   }
-}
-
-function getAdminPass() {
-  return localStorage.getItem(ADMIN_PASS_KEY) || DEFAULT_PASS;
-}
-
-function setAdminPass(np) {
-  localStorage.setItem(ADMIN_PASS_KEY, np);
 }
 
 function uid(prefix) {
